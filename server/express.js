@@ -6,7 +6,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import Template from './../template';
 
-import userRoutes from './routes/user'
+import userRoutes from './routes/user.route'
 
 const app = express()
 
