@@ -1,5 +1,6 @@
 import express from 'express'
 import userController from '../controllers/user.controller'
+import authController from '../controllers/auth.controller'
 
 const router = express.Router()
 
@@ -8,9 +9,9 @@ router.route('/api/users')
     .post(userController.create)
 
 router.route('/api/users/:userId')
-    .get(userController.read)
-    .put(userController.update)
-    .delete(userController.remove)
+    .get(authController.signInRequired, userController.read)
+    .put(authController.signInRequired, authController.hasAuthorization, userController.update)
+    .delete(authController.signInRequired, authController.hasAuthorization, userController.remove)
 
 router.param('userId', userController.userByID)
 

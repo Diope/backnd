@@ -1,0 +1,35 @@
+import User from '../models/User.model';
+import expressJwt from 'express-jwt';
+import jwt from 'jsonwebtoken';
+import config from './../../config/config';
+
+const signIn = async (req, res) => {
+    try {
+        const token = jwt.sign({_id: user._id}, config.jwtSecret)
+
+        let user = await User.findOne({"email": req.body.email})
+        if (!user) return res.status('401').json({error: "This user cannot be found"})
+        if (!user.authenticate(req.body.password)) return res.status('401').send({error: "Email and password do not match"})
+
+        res.cookie('t', token, {expire: new Date() + 9999})
+        return res.json({token, user: {_id: user._id, username: user.username, email: user.email}})
+    } catch (err) {
+        return res.status('401').json({ error: "Could not sign in" })
+    }
+}
+const signOut = (req, res) => {
+    res.clearCookie("t")
+    return res.status('200').json({messaged: "You have successfully logged out"})
+}
+const hasAuthorization = (req, res, next) => {
+    const authorized = req.profile && req.auth && req.profile._id == req.auth._id
+
+    if (!authorized) return res.status('403').json({ error: "User is not authorized to make the attempted changes" })
+    next()
+}
+const signInRequired = expressJwt({
+    secret: config.jwtSecret,
+    userProperty: 'auth'
+})
+
+export default {signIn, signOut, hasAuthorization, signInRequired}
