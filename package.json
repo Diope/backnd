@@ -1,17 +1,23 @@
 {
-  "name": "mern_boilerplate",
+  "name": "backnd",
   "version": "1.0.0",
   "description": "I got tired of copy_pasting backend code and got tired of doing the same basic steps for the frontend part soooooo why not take this quaratine time to make a boilerplate that sets up my environment the way I like and constantly use?",
   "main": "index.js",
   "author": "Dion Pettaway",
   "license": "MIT",
   "scripts": {
-    "development": "nodemon"
+    "development": "nodemon",
+    "test": "jest",
+    "test:model": "jest --testPathPattern model_test",
+    "test:app": "jest --testPathPattern app_test"
   },
   "devDependencies": {
     "@babel/core": "7.9.6",
     "@babel/preset-env": "7.9.6",
+    "@shelf/jest-mongodb": "1.1.5",
     "babel-loader": "8.1.0",
+    "jest": "26.0.1",
+    "sinon": "9.0.2",
     "webpack": "4.43.0",
     "webpack-cli": "3.3.11",
     "webpack-node-externals": "1.7.2"
