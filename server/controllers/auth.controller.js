@@ -3,18 +3,40 @@ import expressJwt from 'express-jwt';
 import jwt from 'jsonwebtoken';
 import config from './../../config/config';
 
+const signInAlt = async (req, res) => {
+    const _user = await User.findOne({"email": req.body.email})
+    if (!_user) return res.status('401').json({error: `The email ${req.body.email} cannot be found`})
+
+    try {
+        _user.comparePassword(req.body.password, function(err, isMatch) {
+            if (!isMatch) {
+                return res.json({message: "Authentication failed, password is incorrect"});
+            } else {
+                const token = jwt.sign({_id: _user._id}, config.jwtSecret)
+                res.cookie('t', token, {expire: new Date() + 9999})
+                return res.json({token, user: {_id: _user._id, username: _user.username, email: _user.email}})
+            }
+        });
+
+    } catch (err) {
+        return res.status('401').json({ error: "An error has occurred unable to sign in.", error: err })
+    }
+}
+
+
 const signIn = async (req, res) => {
     try {
-        const token = jwt.sign({_id: user._id}, config.jwtSecret)
-
+        
         let user = await User.findOne({"email": req.body.email})
-        if (!user) return res.status('401').json({error: "This user cannot be found"})
+        if (!user) return res.status('401').json({error: `The email ${req.body.email} cannot be found`})
         if (!user.authenticate(req.body.password)) return res.status('401').send({error: "Email and password do not match"})
+        
+        const token = jwt.sign({_id: user._id}, config.jwtSecret)
 
         res.cookie('t', token, {expire: new Date() + 9999})
         return res.json({token, user: {_id: user._id, username: user.username, email: user.email}})
     } catch (err) {
-        return res.status('401').json({ error: "Could not sign in" })
+        return res.status('401').json({ error: "An error has occurred unable to sign in." })
     }
 }
 const signOut = (req, res) => {
@@ -32,4 +54,4 @@ const signInRequired = expressJwt({
     userProperty: 'auth'
 })
 
-export default {signIn, signOut, hasAuthorization, signInRequired}
+export default {signIn, signOut, signInAlt, hasAuthorization, signInRequired}

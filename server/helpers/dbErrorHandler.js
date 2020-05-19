@@ -1,5 +1,5 @@
 const getErrorMessage = (err) => {
-    let message = ''
+    let message = 'Generic'
     if (err.code) {
         switch(err.code) {
             case 11000:
@@ -24,7 +24,7 @@ const getUniqueErrorMessage = (err) => {
         let fieldName =
         err.message.substring(err.message.lastIndexOf('.$') + 2,
         err.message.lastIndexOf('_1'))
-        output = fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + 'already exists'
+        output = fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ' already exists'
     } catch (ex) {
         output = 'Unique field already exists'
     }

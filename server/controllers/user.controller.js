@@ -1,7 +1,8 @@
 import User from '../models/User.model'
 import extend from 'lodash/extend'
-import errorHandler from './error.controller'
+import errorHandler from '../helpers/dbErrorHandler'
 
+// Might change to search by username and make username unique.
 const userByID = async (req, res, next, id) => {
     try {
         let user = await User.findById(id)
@@ -13,18 +14,28 @@ const userByID = async (req, res, next, id) => {
     }
 }
 const create = async (req, res, next) => {
-    const user = new User(req.body)
+    const username = req.body.username
+    const email = req.body.email
+    let _user = await User.findOne({$or:[{username}, {email}]})
+
     try {
-        await user.save()
+        if (null != _user) {
+            if (email === _user.email) {
+                return res.status(409).json({message: `The email ${email} is already in use, please choose another`})
+            }else if( username === _user.username) {
+                return res.status(409).json({message: `The username ${username} is already in use please choose another.`})
+            }
+        }
+        User.create(req.body)
         return res.status(200).json({
-            message: "You have successfully signed"
+            message: `You have successfully signed up with the username: ${req.body.username}`
         })
     } catch (err) {
-        return res.status(400).json({
-            error: errorHandler.getErrorMessage(err)
-        })
+        return res.status(400).json({error: errorHandler.getErrorMessage(err)})
     }
 }
+
+
 const read = async (req, res) => {
     req.profile.hashed_password = undefined
     req.profile.salt = undefined

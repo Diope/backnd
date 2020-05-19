@@ -4,7 +4,7 @@ import authController from '../controllers/auth.controller';
 const router = express.Router()
 
 router.route('/auth/signin')
-    .post(authController.signIn)
+    .post(authController.signInAlt)
 router.route('/auth/signout')
     .post(authController.signOut)
 

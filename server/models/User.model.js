@@ -1,11 +1,15 @@
 import mongoose from 'mongoose';
-import crypto from 'crypto'
+import crypto from 'crypto';
+import bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 13;
 
 const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         trim: true,
-        required: 'Name is required'
+        unique: 'That username is already in use',
+        required: 'Username is required'
     },
     email: {
         type: String,
@@ -14,33 +18,49 @@ const UserSchema = new mongoose.Schema({
         match: [/.+\@.+\..+/, 'Please provide a valid email address.'],
         required: 'Email is required'
     },
-    hashed_password: {
+    password: {
         type: String,
         required: "Password is required"
     },
-    Salt: String
+    salt: String
 }, { timestamps: true })
 
-UserSchema
-    .path('hashed_password').validate(function(v) {
-        if (this._password && this._password.length < 7) {
+UserSchema.pre('save', function(next) {
+    let user = this;
+    if (user.isModified('password')) {
+        bcrypt.genSalt(SALT_ROUNDS, function(err, salt) {
+            if (err) return next(err)
+            bcrypt.hash(user.password, salt, function(err, hash) {
+                if (err) throw new Error(err)
+                user.password = hash
+                next()
+            })
+        })
+    } else {
+        next()
+    }
+})
+
+// UserSchema
+//     .virtual('password')
+//     .set(function(password) {
+//         this._password = password
+//         this.salt = this.makeSalt()
+//         this.hashed_password = this.encryptPassword(password)
+//     })
+//     .get(function() {
+//         return this._password
+//     })
+
+UserSchema.path('password').validate(function(v) {
+        if (this.password && this.password.length < 7) {
             this.invalidate('password', 'Password must be at least 7 characters.')
         }
-        if (this.isNew && !this._password) {
+        if (this.isNew && !this.password) {
             this.invalidate('password', 'A Password is required')
         }
     }, null)
 
-UserSchema
-    .virtual('password')
-    .set(function(password) {
-        this._password = password
-        this.salt = this.makeSalt()
-        this.hashed_password = this.encryptPassword(password)
-    })
-    .get(function() {
-        return this._password
-    })
 
 UserSchema.methods = {
     authenticate: function(plainText) {
@@ -50,7 +70,7 @@ UserSchema.methods = {
         if (!password) return ''
         try {
             return crypto
-                .createHmac('shal', this.salt)
+                .createHmac('sha256', this.salt)
                 .update(password)
                 .digest('hex')
         } catch (err) {
@@ -58,8 +78,15 @@ UserSchema.methods = {
         }
     },
     makeSalt: function() {
-        return Math.round((new Date().valueOf() * Math.random())) + ''
-    }
+        return crypto.randomBytes(64).toString('hex') + ''
+    },
+    comparePassword: function comparePassword(candidatePass, cb) {
+        bcrypt.compare(candidatePass, this.password, function(err, isMatch) {
+            if (err) return cb(err)
+            cb(null, isMatch)
+        })
+    },
+
 }
 
 export default mongoose.model('User', UserSchema)
