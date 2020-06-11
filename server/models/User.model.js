@@ -8,6 +8,8 @@ const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         trim: true,
+        minlength: [3, 'Username is too short, minimum length is 3 characters'],
+        maxlength: [14, 'Maximum username length is 14 characters'],
         unique: 'That username is already in use',
         required: 'Username is required'
     },
@@ -15,7 +17,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         trim: true,
         unique: 'That email is already in use.',
-        match: [/.+\@.+\..+/, 'Please provide a valid email address.'],
+        match: [/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Please provide a valid email address.'],
         required: 'Email is required'
     },
     password: {

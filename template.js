@@ -3,10 +3,10 @@ export default () => {
         <html lang="en">
             <head>
                 <meta charset="utf-8">
-                <title>M.E.R.N based Skeleton</title>
+                <title>Backnd</title>
             </head>
             <body>
-                <div id="root">This boilerplate should get you up and running on a Mongoose, Express, React, Node application! Comes with authentication/authorization via JWT!</div>
+                <div id="root">This boilerplate should get you up and running on a Mongoose, Express, Node application! Comes with basic authentication/authorization via JWT. Drop in your favorite front-end and off you go.</div>
             </body>
         </html>
     `
