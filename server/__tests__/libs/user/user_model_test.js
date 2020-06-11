@@ -52,18 +52,7 @@ describe('User model test', () => {
     });
 
     describe('Rejected user auth functinoality', () => {
-        it('Username with less 3 characters is rejected', async () => {
-            let user = new User({username: "ko", email: "toko@gmail.com", password: "password01"})
-            let err;
-
-            try {
-                const savedUser = await user.save();
-                error = savedUser
-            } catch (error) {
-                err = error
-            }
-            expect(err).toBeInstanceOf(mongoose.Error.ValidationError)
-        });
+        
 
         it('Malformatted email is rejected', async() => {
             let user = new User({username: "canooo", email: "toap@@gmail..com", password: "password01"})
@@ -77,6 +66,19 @@ describe('User model test', () => {
             }
             expect(err).toBeInstanceOf(mongoose.Error.ValidationError)
         })
+
+        it('Username with less 3 characters is rejected', async () => {
+            let user = new User({username: "ko", email: "toko@gmail.com", password: "password01"})
+            let err;
+
+            try {
+                const savedUser = await user.save();
+                error = savedUser
+            } catch (error) {
+                err = error
+            }
+            expect(err).toBeInstanceOf(mongoose.Error.ValidationError)
+        });
 
         it('Username with more than 14 characters is rejected', async () => {
             let user = new User({username: "koakdisidkaoajdjkkj", email: "toko@gmail.com", password: "password01"})
