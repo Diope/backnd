@@ -1,7 +1,7 @@
 {
   "name": "backnd",
   "version": "1.0.0",
-  "description": "I got tired of copy_pasting backend code and got tired of doing the same basic steps for the frontend part soooooo why not take this quaratine time to make a boilerplate that sets up my environment the way I like and constantly use?",
+  "description": "I got tired of copy_pasting backend code from an older project and got tired of doing the same basic steps for the frontend part soooooo why not take this quaratine time to make a boilerplate that sets up my environment the way I like and constantly use?",
   "main": "index.js",
   "author": "Dion Pettaway",
   "license": "MIT",
